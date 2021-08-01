@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import styled from 'styled-components'
 import { NavLink, Switch, Route } from 'react-router-dom'
+import { createStore } from 'redux';
+import { Provider } from 'react-redux'
 
 import Inicio from './components/Inicio'
 import Blog from './components/Blog'
 import Tienda from './components/Tienda'
 import Carrito from './components/Carrito'
 import Error404 from './components/Error404'
+import reducer from './reducers/tiendaReducer'
 
 const App = () => {
 
@@ -50,7 +53,7 @@ const App = () => {
         // De otra forma entonces agregamos el producto al arreglo.
       } else {
         nuevoCarrito.push(
-          { id: idProductoAAgregar, nombre: nombre, cantidad: 1}
+          { id: idProductoAAgregar, nombre: nombre, cantidad: 1 }
         );
       }
 
@@ -59,34 +62,40 @@ const App = () => {
     }
   }
 
+  // El reducer es una funcion que edita nuestro estado global.
+  const store = createStore(reducer);
+  console.log(store.getState());
+
   return (
-    <Contenedor>
-      <Menu>
-        <NavLink to="/">Inicio</NavLink>
-        <NavLink to="/blog">Blog</NavLink>
-        <NavLink to="/tienda">Tienda</NavLink>
-      </Menu>
-      <main>
-        <Switch>
-          <Route path="/" exact={true} component={Inicio} />
-          <Route path="/blog" component={Blog} />
-          <Route path="/tienda">
-            <Tienda
-              productos={productos}
-              agregarProductosAlCarrito={agregarProductosAlCarrito}
-            />
-          </Route>
-          <Route component={Error404} />
-        </Switch>
-      </main>
-      <aside>
-        <div>
-          <aside>
-            <Carrito carrito={carrito} />
-          </aside>
-        </div>
-      </aside>
-    </Contenedor>
+    <Provider store={store}>
+      <Contenedor>
+        <Menu>
+          <NavLink to="/">Inicio</NavLink>
+          <NavLink to="/blog">Blog</NavLink>
+          <NavLink to="/tienda">Tienda</NavLink>
+        </Menu>
+        <main>
+          <Switch>
+            <Route path="/" exact={true} component={Inicio} />
+            <Route path="/blog" component={Blog} />
+            <Route path="/tienda">
+              <Tienda
+                productos={productos}
+                agregarProductosAlCarrito={agregarProductosAlCarrito}
+              />
+            </Route>
+            <Route component={Error404} />
+          </Switch>
+        </main>
+        <aside>
+          <div>
+            <aside>
+              <Carrito carrito={carrito} />
+            </aside>
+          </div>
+        </aside>
+      </Contenedor>
+    </Provider>
   );
 }
 
